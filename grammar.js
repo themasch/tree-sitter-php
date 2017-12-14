@@ -25,6 +25,7 @@ module.exports = grammar({
 
   externals: $ => [
     $._automatic_semicolon,
+    $.comment,
   ],
 
   conflicts: $ => [
@@ -56,6 +57,7 @@ module.exports = grammar({
 
   extras: $ => [
     $.comment,
+    $.block_comment,
     /[\s\uFEFF\u2060\u200B\u00A0]/,
     $.text_interpolation
   ],
@@ -976,9 +978,8 @@ module.exports = grammar({
       return /[_a-zA-Z\u0080-\u00ff][_a-zA-Z\u0080-\u00ff\d]*/
     },
 
-    comment: $ => token(choice(
-      seq(choice('//', '#'), /.*/),
-      seq(
+
+    block_comment: $ => token(prec(-1, seq(
         '/*',
         /[^*]*\*+([^/*][^*]*\*+)*/,
         '/'

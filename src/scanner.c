@@ -3,6 +3,7 @@
 
 enum TokenType {
   AUTOMATIC_SEMICOLON,
+  COMMENT
 };
 
 void *tree_sitter_php_external_scanner_create() { return NULL; }
@@ -38,15 +39,47 @@ static bool scan_whitespace_and_comments(TSLexer *lexer) {
 
 bool tree_sitter_php_external_scanner_scan(void *payload, TSLexer *lexer,
                                                   const bool *valid_symbols) {
-  lexer->result_symbol = AUTOMATIC_SEMICOLON;
-  // Mark the end of a scanned token.
-  lexer->mark_end(lexer);
+    if (valid_symbols[AUTOMATIC_SEMICOLON]) {
+      lexer->result_symbol = AUTOMATIC_SEMICOLON;
+      // Mark the end of a scanned token.
+      lexer->mark_end(lexer);
 
-  if (!scan_whitespace_and_comments(lexer)) return false;
-  if (lexer->lookahead != '?') return false;
+      // if (!scan_whitespace_and_comments(lexer)) return false;
+      while (iswspace(lexer->lookahead)) {
+        advance(lexer);
+      }
+      if (lexer->lookahead == '?') {
+        advance(lexer);
 
-  advance(lexer);
+        return lexer->lookahead == '>';
+      }
+    }
 
-  return lexer->lookahead == '>';
+      lexer->result_symbol = COMMENT;
+
+      while (iswspace(lexer->lookahead)) {
+        lexer->advance(lexer, true);
+      }
+
+      if (lexer->lookahead == '#') {
+        advance(lexer);
+
+      } else if (lexer->lookahead == '/') {
+        advance(lexer);
+        if (lexer->lookahead == '/') {
+          advance(lexer);
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+      while (lexer->lookahead != '\n' && lexer->lookahead != 0) {
+        advance(lexer);
+      }
+
+      lexer->mark_end(lexer);
+      return true;
 }
 

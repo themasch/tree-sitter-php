@@ -9,12 +9,12 @@
 #ahahah
 #ahhfhf
 
-echo '#ola'; //?
+echo '#ola'; //>?fsd
 echo "\n";
 echo 'uhm # ah'; #ah?
-echo "\n";
-echo "e este, # hein?";
-echo "\n";
+echo "\n"; #???fafa>
+echo "e este, # hein?"; #???fdsafsa????
+echo "\n"; #???fdsaf???sa????
 
 ?>
 
